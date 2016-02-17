@@ -20,8 +20,8 @@ class Day {
 
   equals(other: Day) {
     return this.year === other.year
-      && this.month == other.month
-      && this.date == other.date;
+      && this.month === other.month
+      && this.date === other.date;
   }
 
   isSame(other: Day) {
