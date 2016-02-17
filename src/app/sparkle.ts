@@ -119,8 +119,7 @@ export class DayPickerComponent {
     // Offset the view a little bit so it aligns nicely
     let startOfView = startOfMonth.clone().add(-startOfMonth.weekday(), 'day');    
     return _.range(0, numberOfWeeks)
-      .map(x => x * 7)
-      .map(x => startOfView.clone().add(x, 'day'))
+      .map(x => startOfView.clone().add(x * 7, 'day'))
       .map(x => Week.from(x));
   }
 
