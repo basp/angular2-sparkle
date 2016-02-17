@@ -51,6 +51,33 @@ class Week {
   }
 }
 
+class Month {
+  static fromMoment(m) {
+    return new Month(m.year(), m.month());
+  }
+
+  constructor(public year: number, public month: number) { }
+  
+  toDate() {
+    return this.toMoment().toDate();
+  }
+  
+  toMoment() {
+    return moment([this.year, this.month]);
+  }
+  
+  isSame(other: Month) {
+    return this.year === other.year 
+      && this.month === other.month;
+  }
+}
+
+function monthsFrom(m, number) {
+  return _.range(0, number)
+    .map(x => m.clone().add(x, 'month'))
+    .map(x => new Month(x.year(), x.month()));
+}
+
 @Component({
   selector: 'day-picker',
   styles: [
@@ -93,7 +120,7 @@ class Week {
 export class DayPickerComponent {
   private _cursor: Day;
   private _value: Day;
-  
+
   constructor() {
     let m = moment();
     this._cursor = Day.fromMoment(m);
@@ -144,5 +171,84 @@ export class DayPickerComponent {
   moveCursor(amount: number, unitOfTime: string) {
     let m = this._cursor.toMoment().add(amount, unitOfTime);
     this._cursor = Day.fromMoment(m);
+  }
+}
+
+@Component({
+  selector: 'month-picker',
+  styles: [
+    'table { width: 100% }',
+    'button { width: 100% }'
+  ],  
+  template: `
+    <table>
+      <tr>
+        <td>
+          <button class="btn btn-default" (click)="prev()">&lt;</button>
+        </td>
+        <td colspan="2">
+          <button class="btn btn-default">
+            {{cursor.year}}
+          </button>
+        </td>
+        <td>
+          <button class="btn btn-default" (click)="next()">&gt;</button>
+        </td>
+      </tr>
+      <tr *ngFor="#row of months">
+        <td *ngFor="#month of row">
+          <button class="btn btn-default" 
+            (click)="select(month)"
+            [class.btn-primary]="value.isSame(month)">
+              {{month.toDate() | date:'MMM'}}
+          </button>
+        </td>
+      </tr>
+    </table>
+    `
+})
+export class MonthPickerComponent {
+  private _cursor: Month;
+  private _value: Month;
+  
+  constructor() { 
+    let m = moment();
+    this._cursor = Month.fromMoment(m);
+    this._value = Month.fromMoment(m);
+  }
+  
+  next() {
+    this._moveCursor(1, 'year');
+  }
+  
+  prev() {
+    this._moveCursor(-1, 'year');
+  }
+  
+  select(m: Month) {
+    this._cursor = m;
+    this._value = m;
+  }
+  
+  private _moveCursor(amount: number, unitOfTime: string) {
+    let m = this._cursor.toMoment().clone().add(amount, unitOfTime);
+    this._cursor = Month.fromMoment(m);
+  }
+  
+  get value() {
+    return this._value;
+  }
+  
+  get cursor() {
+    return this._cursor;
+  }
+  
+  get months(): Month[][] {
+    const numberOfRows = 4;
+    const monthsPerRow = 4;
+    let startOfView = moment([this._cursor.year - 1, 8]);
+    return _.range(numberOfRows)
+      .map(x => startOfView.clone().add(x * monthsPerRow, 'month'))
+      .map(x => monthsFrom(x, monthsPerRow));
   }
 }
