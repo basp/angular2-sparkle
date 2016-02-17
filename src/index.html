@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>My App</title>
+  
+  <!-- inject:css -->
+  <!-- endinject -->
+  
+  <!-- inject:js -->
+  <!-- endinject -->
+  
+  <script>
+    System.config({
+      packages: {
+        app: {
+          format: 'register',
+          defaultExtension: 'js'
+        }
+      }
+    });
+    System.import('app/boot').catch(function (err) {
+      console.error(err);
+    });
+  </script>  
+    
+</head>
+
+<body>
+  <app>Loading...</app>
+</body>
+
+</html>
